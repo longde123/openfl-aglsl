@@ -1,3 +1,6 @@
+from https://github.com/away3d/away3d-core-ts/tree/master/src/aglsl
+
+
 aglsl  demo   for     openfl  
 
 run 
