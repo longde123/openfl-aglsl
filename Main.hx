@@ -70,7 +70,7 @@ class Main extends Sprite
 		
 		stage3D = stage.getStage3D(0);
         stage3D.addEventListener(Event.CONTEXT3D_CREATE, init); 
-        stage3D.requestContext3D(); 
+        stage3D.requestAGLSLContext3D(); 
 			 
 	}
 	
@@ -94,8 +94,7 @@ class Main extends Sprite
 		
 		// offset 0, count 3
 		indexBuffer.uploadFromVector(flash.Vector.ofArray(indexData), 0, 3);
-			
-	  #if (flash)
+			 
 		var vertexShaderAssembler : Shader = AGLSLShaderUtils.createShader( Context3DProgramType.VERTEX,
 			"m44 op, va0, vc0\n" +
 			"mov v0, va1\n"
@@ -103,36 +102,7 @@ class Main extends Sprite
 		var fragmentShaderAssembler : Shader= AGLSLShaderUtils.createShader(Context3DProgramType.FRAGMENT,
 			"mov oc, v0\n"
 		);
-			#end
-		  #if (cpp || neko || js)
-		var vertexShaderAssembler : Shader = createWebGLShader( Context3DProgramType.VERTEX,
-				"precision mediump float;
-				uniform float yflip;
-				uniform vec4 vc0;
-				uniform vec4 vc1;
-				uniform vec4 vc2;
-				uniform vec4 vc3;
-				attribute vec4 va0;
-				attribute vec4 va1;
-				varying vec4 vi0;
-				vec4 outpos;
-				void main() {
-				  outpos.x = float(dot(vec4(va0),vec4(vc0)));
-				  outpos.y = float(dot(vec4(va0),vec4(vc1)));
-				  outpos.z = float(dot(vec4(va0),vec4(vc2)));
-				  outpos.w = float(dot(vec4(va0),vec4(vc3)));
-				  vi0 = vec4(va1);
-				  gl_Position = vec4(outpos.x, yflip*outpos.y, outpos.z*2.0 - outpos.w, outpos.w);
-				}"
-		);
-		var fragmentShaderAssembler : Shader= createWebGLShader(Context3DProgramType.FRAGMENT,
-			"precision mediump float;
-			varying vec4 vi0;
-			void main() {
-			  gl_FragColor = vec4(vi0);
-			}"
-		);
-		#end
+		 
 		
 		program.upload( vertexShaderAssembler, fragmentShaderAssembler);
 	
@@ -168,8 +138,8 @@ class Main extends Sprite
 		var matrix3D:Matrix3D = new Matrix3D();    
 	 
 		matrix3D.identity(); 
-		//matrix3D.appendRotation(Lib.getTimer()/40, Vector3D.Z_AXIS);
-		//matrix3D.appendRotation(rot, Vector3D.Z_AXIS);    
+		//matrix3D.appendRotation(30, Vector3D.Z_AXIS);
+		matrix3D.appendRotation(rot, Vector3D.Z_AXIS);    
 		
 		context3D.clear (1, 0, 0, 1);
 	 
@@ -179,44 +149,6 @@ class Main extends Sprite
 		 
 		context3D.present();
 	}
-	
-	   #if (cpp || neko || js)
-	inline public static function createWebGLShader (type: Context3DProgramType, shaderSource:String): flash.display3D.shaders.Shader {
-
-     
-
-		 
-	
-		var glType : Int; 
-        switch(type){
-            case Context3DProgramType.VERTEX: {
-				glType = GL.VERTEX_SHADER; 
-			}
-            case Context3DProgramType.FRAGMENT: {
-				glType = GL.FRAGMENT_SHADER; 
-			}
-        }
-
-		 
-		var shader = GL.createShader (glType);
-		GL.shaderSource (shader, shaderSource);
-		GL.compileShader (shader);
-
-		if (GL.getShaderParameter (shader, GL.COMPILE_STATUS) == 0) {
-
-			trace("--- ERR ---\n" + shaderSource);
-			var err = GL.getShaderInfoLog (shader);
-			if (err != "") throw err;
-
-		} 
-		 
-		return shader;
-
 	 
-
-   
-
-    }
-     #end
 }
 
