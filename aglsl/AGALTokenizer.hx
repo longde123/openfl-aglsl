@@ -9,7 +9,7 @@ class AGALTokenizer {
 	}
 
 	public function decribeAGALByteArray(bytes : ByteArray) : Description {
- 
+	
 		var header : Header = new Header();
 		if(bytes.readUnsignedByte() != 0xa0)  {
 			throw "Bad AGAL : Missing 0xa0 magic byte.";
